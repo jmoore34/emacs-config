@@ -124,7 +124,7 @@ T: 0-100"
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (magit windresize treemacs multiple-cursors expand-region eglot company)))
+    (undo-tree spaceline rainbow-delimiters magit windresize treemacs multiple-cursors expand-region eglot company)))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil))
 (custom-set-faces
