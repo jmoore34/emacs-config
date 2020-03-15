@@ -72,8 +72,8 @@ T: 0-100"
 (global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-a") #'mc/mark-all-like-this)
 ;; quick compile
-(global-set-key (kbd "ESC <f5>") #'compile)
-(global-set-key (kbd "<f5>") #'recompile)
+(global-set-key (kbd "C-c b") #'compile)
+(global-set-key (kbd "C-c B") #'recompile)
 ;; expand region
 (global-set-key (kbd "C-=") #'er/expand-region)
 
