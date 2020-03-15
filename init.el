@@ -87,6 +87,14 @@ T: 0-100"
 (global-set-key (kbd "C-S-<up>") #'windmove-up)
 (global-set-key (kbd "C-S-<down>") #'windmove-down)
 
+
+;; Eglot bindings
+(global-set-key (kbd "C-c a") #'eglot-code-actions)
+(global-set-key (kbd "C-c ;") #'eglot-rename)
+(global-set-key (kbd "C-c d") #'xref-find-definitions)
+(global-set-key (kbd "C-c r") #'xref-find-references)
+
+
 ;; Charles's custom functions
 
 (defun save-all ()
