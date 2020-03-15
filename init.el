@@ -121,6 +121,7 @@ T: 0-100"
  ;; If there is more than one, they won't work right.
  '(electric-pair-mode t)
  '(inhibit-startup-screen t)
+ '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
     (magit windresize treemacs multiple-cursors expand-region eglot company)))
