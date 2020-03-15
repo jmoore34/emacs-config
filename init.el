@@ -64,7 +64,7 @@ T: 0-100"
 (global-set-key (kbd "<M-up>") #'move-line-up)
 (global-set-key (kbd "<M-down>") #'move-line-down)
 ;; treemacs
-(global-set-key (kbd "C-c d") #'treemacs)
+(global-set-key (kbd "C-x d") #'treemacs)
 ;; multiple cursors
 (global-set-key (kbd "C-c M-e") #'mc/edit-lines)
 (global-set-key (kbd "C->") #'mc/mark-next-like-this)
