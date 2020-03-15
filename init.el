@@ -93,6 +93,7 @@ T: 0-100"
 (global-set-key (kbd "C-c ;") #'eglot-rename)
 (global-set-key (kbd "C-c d") #'xref-find-definitions)
 (global-set-key (kbd "C-c r") #'xref-find-references)
+(global-set-key (kbd "C-c l") #'eglot-format)
 
 
 ;; Charles's custom functions
