@@ -52,9 +52,28 @@ T: 0-100"
                 (if help (message "%s" help) (funcall oldfun)))))
 
 
+;; Helm
+(setq helm-display-function 'helm-display-buffer-in-own-frame
+        helm-display-buffer-reuse-frame t
+        helm-use-undecorated-frame-option t)
+
+;; Ivy
+(setq ivy-re-builders-alist
+      '((t . ivy--regex-plus)))
 
 ;; Key Bindings
 
+;; Helm
+(global-set-key (kbd "M-y") #'helm-show-kill-ring)
+(global-set-key (kbd "M-x") #'helm-M-x)
+(global-set-key (kbd "<menu>") #'helm-M-x)
+
+;; Ivy
+(global-set-key (kbd "C-x B") #'ivy-push-view)
+(global-set-key (kbd "C-s") #'swiper)
+(global-set-key (kbd "C-x b") #'ivy-switch-buffer)
+(global-set-key (kbd "C-b") #'ivy-switch-buffer) ; overwrite
+(global-set-key (kbd "C-x C-f") #'counsel-find-file)
 ;; window management
 (global-set-key (kbd "C-o") #'(lambda () (interactive) (other-window 1)))
 (global-set-key (kbd "M-o") #'(lambda () (interactive) (other-window -1))) ;overwrite
@@ -132,19 +151,25 @@ T: 0-100"
        (previous-line)
        (end-of-line nil))
 
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(diff-hl-flydiff-mode t)
+ '(diff-hl-margin-mode t)
  '(electric-pair-mode t)
+ '(helm-allow-mouse t)
+ '(helm-frame-alpha 95)
  '(inhibit-startup-screen t)
  '(menu-bar-mode nil)
  '(package-selected-packages
    (quote
-    (undo-tree spaceline rainbow-delimiters magit windresize treemacs multiple-cursors expand-region eglot company)))
+    (perspective workgroups2 company-fuzzy flx counsel ivy eyebrowse srefactor ranger helm browse-kill-ring realgud forge diff-hl git-gutter telephone-line ## yasnippet yasnippet-snippets undo-tree spaceline rainbow-delimiters magit windresize treemacs multiple-cursors expand-region eglot company)))
  '(scroll-bar-mode nil)
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+ '(yas-global-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
