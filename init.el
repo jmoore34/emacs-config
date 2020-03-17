@@ -156,6 +156,17 @@ T: 0-100"
 (global-set-key (kbd "M-RET d") 'srefactor-lisp-format-defun)
 (global-set-key (kbd "M-RET b") 'srefactor-lisp-format-buffer)
 
+
+;; Shell fix to allow for clearing with C-l
+(add-hook 'comint-mode-hook
+          (defun rm-comint-postoutput-scroll-to-bottom ()
+            (remove-hook 'comint-output-filter-functions
+                         'comint-postoutput-scroll-to-bottom)))
+
+;; Shell fix to use bash aliases
+(setq shell-file-name "bash")
+(setq shell-command-switch "-ic")
+
 ;; Charles's custom functions
 
 (defun save-all ()
