@@ -19,23 +19,32 @@ T: 0-100"
 (switch-to-buffer "*scratch*")
 
 
-
-
 ;; Enable packages
+
+;; yasnippet
+;; (yas-global-mode 1)
 
 (global-undo-tree-mode)
 (treemacs)
 
-(require 'company)
-(global-company-mode 1)
-(global-set-key (kbd "M-/") #'company-complete)
-(add-hook 'after-init-hook 'global-company-mode)
+
 
 (require 'eglot)
 (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
+(add-to-list 'eglot-server-programs '(python-mode . ("pyls")))
+
 ;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "/home/Jon/build2/bin/clangd")) 
 (add-hook 'c-mode-hook 'eglot-ensure)
 (add-hook 'c++-mode-hook 'eglot-ensure)
+(add-hook 'python-mode-hook 'eglot-ensure)
+
+
+(require 'company)
+(global-set-key (kbd "M-/") #'company-complete)
+(add-hook 'after-init-hook 'global-company-mode)
+;; Fuzzy company
+;; (global-company-fuzzy-mode 1)
+
 
 (advice-add 'eglot-eldoc-function :around
             (lambda (oldfun)
