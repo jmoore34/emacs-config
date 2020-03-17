@@ -77,6 +77,11 @@ T: 0-100"
 (setq ivy-re-builders-alist
       '((t . ivy--regex-plus)))
 
+;; Autosave
+(add-hook 'focus-out-hook 'save-buffer)
+(auto-save-visited-mode)
+(setq compilation-ask-about-save nil)
+
 ;; Key Bindings
 
 ;; Helm
