@@ -55,6 +55,9 @@ T: 0-100"
 ;; Telephone line (powerline)
 (require 'telephone-line)
 (telephone-line-mode 1)
+;; Forge (magit addon)
+(with-eval-after-load 'magit
+  (require 'forge))
 ;; Helm
 (setq helm-display-function 'helm-display-buffer-in-own-frame
         helm-display-buffer-reuse-frame t
