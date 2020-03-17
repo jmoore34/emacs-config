@@ -58,6 +58,16 @@ T: 0-100"
 ;; Forge (magit addon)
 (with-eval-after-load 'magit
   (require 'forge))
+
+
+;; Ranger
+(ranger-override-dired-mode t)
+(setq ranger-preview-file t)
+(setq ranger-dont-show-binary t)
+(setq ranger-max-preview-size 10)
+(setq ranger-width-preview 0.40)
+
+
 ;; Helm
 (setq helm-display-function 'helm-display-buffer-in-own-frame
         helm-display-buffer-reuse-frame t
