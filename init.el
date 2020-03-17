@@ -77,8 +77,9 @@ T: 0-100"
 (global-set-key (kbd "C-x b") #'ivy-switch-buffer)
 (global-set-key (kbd "C-b") #'ivy-switch-buffer) ; overwrite
 (global-set-key (kbd "C-x C-f") #'counsel-find-file)
+
 ;; window management
-(global-set-key (kbd "C-o") #'(lambda () (interactive) (other-window 1)))
+;; (global-set-key (kbd "C-o") #'(lambda () (interactive) (other-window 1)))
 (global-set-key (kbd "M-o") #'(lambda () (interactive) (other-window -1))) ;overwrite
 (global-set-key (kbd "C-q") #'delete-window) ;overwrite
 (global-set-key (kbd "M-q") #'(lambda () (interactive) (kill-buffer (current-buffer)))) ;overwrite
@@ -97,7 +98,7 @@ T: 0-100"
 ;; treemacs
 (global-set-key (kbd "C-x d") #'treemacs)
 ;; multiple cursors
-(global-set-key (kbd "C-c M-e") #'mc/edit-lines)
+(global-set-key (kbd "C-c C-e") #'mc/edit-lines)
 (global-set-key (kbd "C->") #'mc/mark-next-like-this)
 (global-set-key (kbd "C-c M->") #'mc/mark-skip-next-like-this)
 (global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
