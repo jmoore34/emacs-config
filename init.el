@@ -52,6 +52,9 @@ T: 0-100"
                 (if help (message "%s" help) (funcall oldfun)))))
 
 
+;; Telephone line (powerline)
+(require 'telephone-line)
+(telephone-line-mode 1)
 ;; Helm
 (setq helm-display-function 'helm-display-buffer-in-own-frame
         helm-display-buffer-reuse-frame t
