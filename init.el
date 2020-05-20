@@ -82,6 +82,14 @@ T: 0-100"
 (auto-save-visited-mode)
 (setq compilation-ask-about-save nil)
 
+;; Backups (~)
+;; https://stackoverflow.com/questions/151945/how-do-i-control-how-emacs-makes-backup-files
+(setq backup-directory-alist `(("." . "~/.saves"))
+     backup-by-copying :true
+     delete-old-versions :true
+     kept-new-versions 6
+     kept-old-versions 2
+     version-contol :true)
 ;; Key Bindings
 
 ;; Helm
