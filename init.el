@@ -4,6 +4,9 @@
 	     '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+
 (load-theme 'wombat)
 
 (defun transparency (opacity)
@@ -13,35 +16,43 @@ T: 0-100"
   (set-frame-parameter (selected-frame) 'alpha opacity)
   )
 
-(set-frame-parameter (selected-frame) 'alpha 60)
+(set-frame-parameter (selected-frame) 'alpha 97)
 
 (find-file "~/.emacs.d/init.el")
-(switch-to-buffer "*scratch*")
 
+(defun candl ()
+  (interactive)
+  (find-file "/plink:jtm170330@ctf-vm1.utdallas.edu:/home/jtm170330/.bashrc")
+  (find-file "/plink:jtm170330@ctf-vm1.utdallas.edu:/home/jtm170330"))
 
-;; Research
-(setq revert-without-query (quote ("^obs(.org)?")))
+  ;; (find-file "/plink:jtm170330@ctf-vm1.syssec.run#2221:/home/jtm170330/.bashrc")
+  ;; (find-file "/plink:jtm170330@ctf-vm1.syssec.run#2221:/home/jtm170330"))
+
+(defun candl2 ()
+  (interactive)
+  (find-file "/plink:jtm170330@ctf-vm2.utdallas.edu:/home/jtm170330/.bashrc")
+  (find-file "/plink:jtm170330@ctf-vm2.utdallas.edu:/home/jtm170330"))
+
+(defun candl3 ()
+  (interactive)
+  (find-file "/plink:jtm170330@edgar.utdallas.edu:/home/jtm170330/"))
+
+;; (switch-to-buffer "*scratch*")
+
 
 ;; Enable packages
 ;; Add opam emacs directory to you load paths:
 
-;; Opam / BAP
-(defun opam-path (path)
-  (let ((opam-share-dir (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
-    (concat opam-share-dir "/" path)))
-(add-to-list 'load-path (opam-path "emacs/site-lisp"))
-;; load bap-emacs-goodies
-(require 'bap-mode)
-(require 'dot)
 
 ;; yasnippet
 ;; (yas-global-mode 1)
 
 ;; Togetherly
-(require 'togetherly)
+;; (require 'togetherly)
 
 (global-undo-tree-mode)
 ;; (treemacs)
+
 
 (add-hook 'org-mode-hook (lambda ()
 			   (org-indent-mode)
@@ -56,23 +67,30 @@ T: 0-100"
 			   ))
 
 
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.[tj]sx?\\'" . web-mode))
+;; (require 'web-mode)
+;; (add-to-list 'auto-mode-alist '("\\.[tj]sx?\\'" . web-mode))
 
 
-(require 'eglot)
+;; (require 'eglot)
 ;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
-(add-to-list 'eglot-server-programs '(python-mode . ("pyls")))
+;; (add-to-list 'eglot-server-programs '(python-mode . ("pyls")))
 
 ;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "/home/Jon/build2/bin/clangd")) 
-(add-hook 'c-mode-hook 'eglot-ensure)
-(add-hook 'c++-mode-hook 'eglot-ensure)
-(add-hook 'python-mode-hook 'eglot-ensure)
+;; (add-hook 'c-mode-hook 'eglot-ensure)
+;; (add-hook 'c++-mode-hook 'eglot-ensure)
+;; (add-hook 'python-mode-hook 'eglot-ensure)
 
 (add-hook 'prog-mode-hook 'linum-mode)
 
+;; linum fix
+(eval-after-load "linum"
+  '(set-face-attribute 'linum nil :height 100))
+
+
+
 (require 'company)
 (global-set-key (kbd "M-/") #'company-complete)
+(global-set-key (kbd "C-<return>") #'company-complete)
 ;; (setq company-idle-delay 0)
 ;; (setq company-minimum-prefix-length 2)
 (add-hook 'after-init-hook 'global-company-mode)
@@ -94,6 +112,15 @@ T: 0-100"
   (require 'forge))
 
 
+;; Move-stuff
+(drag-stuff-global-mode 1)
+(drag-stuff-define-keys)
+
+;; Fix word
+(global-set-key (kbd "M-u") #'fix-word-upcase)
+(global-set-key (kbd "M-l") #'fix-word-downcase)
+(global-set-key (kbd "M-c") #'fix-word-capitalize)
+
 ;; Ranger
 (ranger-override-dired-mode nil)
 (setq ranger-preview-file t)
@@ -113,7 +140,7 @@ T: 0-100"
 
 
 ;; Rainbow delimiters
-(add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+;; (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
 
 
 ;; Projectile
@@ -124,7 +151,7 @@ T: 0-100"
 (paren-activate)     ; activating
 
 ;; Autosave (#)
-(add-hook 'focus-out-hook 'save-buffer)
+;; (add-hook 'focus-out-hook 'save-buffer)
 (auto-save-visited-mode)
 (setq compilation-ask-about-save nil)
 ;; automatically save buffers associated with files on buffer switch
@@ -169,6 +196,7 @@ T: 0-100"
 (global-set-key (kbd "M-y") #'helm-show-kill-ring)
 (global-set-key (kbd "M-x") #'helm-M-x)
 (global-set-key (kbd "<menu>") #'helm-M-x)
+(global-set-key (kbd "<apps>") #'helm-M-x)
 
 ;; Ivy
 (global-set-key (kbd "C-x B") #'ivy-push-view)
@@ -232,32 +260,21 @@ T: 0-100"
 
 
 ;; Semantic refactor bindings
-(require 'srefactor)
-(require 'srefactor-lisp)
+;; (require 'srefactor)
+;; (require 'srefactor-lisp)
 
 ;; OPTIONAL: ADD IT ONLY IF YOU USE C/C++. 
-(semantic-mode 1) ;; -> this is optional for Lisp
+;; (semantic-mode 1) ;; -> this is optional for Lisp
 
-(define-key c-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
-(define-key c++-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
-(global-set-key (kbd "M-RET o") 'srefactor-lisp-one-line)
-(global-set-key (kbd "M-RET m") 'srefactor-lisp-format-sexp)
-(global-set-key (kbd "M-RET d") 'srefactor-lisp-format-defun)
-(global-set-key (kbd "M-RET b") 'srefactor-lisp-format-buffer)
+;; (define-key c-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
+;; (define-key c++-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
+;; (global-set-key (kbd "M-RET o") 'srefactor-lisp-one-line)
+;; (global-set-key (kbd "M-RET m") 'srefactor-lisp-format-sexp)
+;; (global-set-key (kbd "M-RET d") 'srefactor-lisp-format-defun)
+;; (global-set-key (kbd "M-RET b") 'srefactor-lisp-format-buffer)
 
 
 
-;;;;;; Custom open shell keybindings
-(global-set-key (kbd "C-c <left>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'left)))
-(global-set-key (kbd "C-c <right>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'right)))
-(global-set-key (kbd "C-c <up>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'above)))
-(global-set-key (kbd "C-c <down>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'below)))
-(global-set-key
- (kbd "C-c c")
- (lambda ()
-   (interactive)
-   (let ((current-prefix-arg '(4)))
-     (call-interactively #'shell))))
 
 ;; Shell fix to allow for clearing with C-l
 (add-hook 'comint-mode-hook
@@ -315,127 +332,19 @@ T: 0-100"
        (previous-line)
        (end-of-line nil))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Custom functions for opening shell
-;; a la https://emacs.stackexchange.com/questions/28909/how-i-can-open-shell-in-current-buffer
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'shell)
-
-(defun shell-get-buffer-create (&optional buffer)
-  "Run an inferior shell, with I/O through BUFFER (which defaults to `*shell*').
-Interactively, a prefix arg means to prompt for BUFFER.
-If `default-directory' is a remote file name, it is also prompted
-to change if called with a prefix arg.
-
-If BUFFER exists but shell process is not running, make new shell.
-If BUFFER exists and shell process is running, just switch to BUFFER.
-Program used comes from variable `explicit-shell-file-name',
- or (if that is nil) from the ESHELL environment variable,
- or (if that is nil) from `shell-file-name'.
-If a file `~/.emacs_SHELLNAME' exists, or `~/.emacs.d/init_SHELLNAME.sh',
-it is given as initial input (but this may be lost, due to a timing
-error, if the shell discards input when it starts up).
-The buffer is put in Shell mode, giving commands for sending input
-and controlling the subjobs of the shell.  See `shell-mode'.
-See also the variable `shell-prompt-pattern'.
-
-To specify a coding system for converting non-ASCII characters
-in the input and output to the shell, use \\[universal-coding-system-argument]
-before \\[shell].  You can also specify this with \\[set-buffer-process-coding-system]
-in the shell buffer, after you start the shell.
-The default comes from `process-coding-system-alist' and
-`default-process-coding-system'.
-
-The shell file name (sans directories) is used to make a symbol name
-such as `explicit-csh-args'.  If that symbol is a variable,
-its value is used as a list of arguments when invoking the shell.
-Otherwise, one argument `-i' is passed to the shell.
-
-\(Type \\[describe-mode] in the shell buffer for a list of commands.)"
-  (interactive
-   (list
-    (and current-prefix-arg
-   (prog1
-       (read-buffer "Shell buffer: "
-        ;; If the current buffer is an inactive
-        ;; shell buffer, use it as the default.
-        (if (and (eq major-mode 'shell-mode)
-           (null (get-buffer-process (current-buffer))))
-            (buffer-name)
-          (generate-new-buffer-name "*shell*")))
-     (if (file-remote-p default-directory)
-         ;; It must be possible to declare a local default-directory.
-               ;; FIXME: This can't be right: it changes the default-directory
-               ;; of the current-buffer rather than of the *shell* buffer.
-         (setq default-directory
-         (expand-file-name
-          (read-directory-name
-           "Default directory: " default-directory default-directory
-           t nil))))))))
-  (setq buffer (if (or buffer (not (derived-mode-p 'shell-mode))
-                       (comint-check-proc (current-buffer)))
-                   (get-buffer-create (or buffer "*shell*"))
-                 ;; If the current buffer is a dead shell buffer, use it.
-                 (current-buffer)))
-
-  ;; On remote hosts, the local `shell-file-name' might be useless.
-  (if (and (called-interactively-p 'any)
-     (file-remote-p default-directory)
-     (null explicit-shell-file-name)
-     (null (getenv "ESHELL")))
-      (with-current-buffer buffer
-  (set (make-local-variable 'explicit-shell-file-name)
-       (file-remote-p
-        (expand-file-name
-         (read-file-name
-    "Remote shell path: " default-directory shell-file-name
-    t shell-file-name))
-        'localname))))
-
-  ;; The buffer's window must be correctly set when we call comint (so
-  ;; that comint sets the COLUMNS env var properly).
-  (with-current-buffer buffer
-    (unless (comint-check-proc buffer)
-      (let* ((prog (or explicit-shell-file-name
-           (getenv "ESHELL") shell-file-name))
-       (name (file-name-nondirectory prog))
-       (startfile (concat "~/.emacs_" name))
-       (xargs-name (intern-soft (concat "explicit-" name "-args"))))
-        (unless (file-exists-p startfile)
-    (setq startfile (concat user-emacs-directory "init_" name ".sh")))
-        (apply 'make-comint-in-buffer "shell" buffer prog
-         (if (file-exists-p startfile) startfile)
-         (if (and xargs-name (boundp xargs-name))
-       (symbol-value xargs-name)
-           '("-i")))
-        (shell-mode))))
-  buffer)
-
-(defun my-display-buffer (buffer alist direction &optional size pixelwise)
-"BUFFER:  The buffer that will be displayed.
-ALIST:  See the doc-string of `display-buffer' for more information.
-DIRECTION:  Must use one of these symbols:  'left 'right 'below 'above
-SIZE:  See the doc-string for `split-window'.
-PIXELWISE:  See the doc-string for `split-window'.
-There are three possibilities:
--  (1) If a window on the frame already displays the target buffer,
-then just reuse the same window.
--  (2) If there is already a window in the specified direction in relation
-to the selected window, then display the target buffer in said window.
--  (3) If there is no window in the specified direction, then create one
-in that direction and display the target buffer in said window."
-  (let ((window
-          (cond
-            ((get-buffer-window buffer (selected-frame)))
-            ((window-in-direction direction))
-            (t
-              (split-window (selected-window) size direction pixelwise)))))
-    (window--display-buffer buffer window 'window alist display-buffer-mark-dedicated)
-    window))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
+;; (load "shell-custom.el")
+;; (global-set-key (kbd "C-c <left>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'left)))
+;; (global-set-key (kbd "C-c <right>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'right)))
+;; (global-set-key (kbd "C-c <up>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'above)))
+;; (global-set-key (kbd "C-c <down>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'below)))
+(global-set-key
+ (kbd "C-c c")
+ (lambda ()
+   (interactive)
+   (let ((current-prefix-arg '(4)))
+     (call-interactively #'shell))))
 
 
 
@@ -444,18 +353,17 @@ in that direction and display the target buffer in said window."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (solarized-zenburn)))
+ '(custom-enabled-themes '(solarized-zenburn))
  '(custom-safe-themes
-   (quote
-    ("51ec7bfa54adf5fff5d466248ea6431097f5a18224788d0bd7eb1257a4f7b773" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" default)))
+   '("51ec7bfa54adf5fff5d466248ea6431097f5a18224788d0bd7eb1257a4f7b773" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" default))
  '(diff-hl-flydiff-mode t)
  '(diff-hl-margin-mode t)
  '(electric-pair-mode t)
+ '(explicit-shell-file-name "/bin/bash")
  '(helm-allow-mouse t)
  '(helm-frame-alpha 95)
  '(hl-todo-keyword-faces
-   (quote
-    (("TODO" . "#dc752f")
+   '(("TODO" . "#dc752f")
      ("NEXT" . "#dc752f")
      ("THEM" . "#2d9574")
      ("PROG" . "#4f97d7")
@@ -469,13 +377,11 @@ in that direction and display the target buffer in said window."
      ("TEMP" . "#b1951d")
      ("FIXME" . "#dc752f")
      ("XXX+" . "#dc752f")
-     ("\\?\\?\\?+" . "#dc752f"))))
+     ("\\?\\?\\?+" . "#dc752f")))
  '(inhibit-startup-screen t)
- '(menu-bar-mode nil)
  '(package-selected-packages
-   (quote
-    (yafolding counsel-projectile projectile corral ranger togetherly org-bullets list-packages-ext tuareg web-mode spacemacs-theme solarized-theme mic-paren perspective workgroups2 company-fuzzy flx counsel ivy eyebrowse srefactor helm browse-kill-ring realgud forge diff-hl git-gutter telephone-line ## yasnippet yasnippet-snippets undo-tree spaceline rainbow-delimiters magit windresize treemacs multiple-cursors expand-region eglot company)))
- '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
+   '(visual-regexp fix-word aggressive-indent drag-stuff yafolding corral ranger org-bullets list-packages-ext web-mode solarized-theme mic-paren company-fuzzy flx counsel ivy helm realgud forge diff-hl git-gutter telephone-line ## yasnippet undo-tree rainbow-delimiters magit windresize treemacs multiple-cursors expand-region eglot company))
+ '(pdf-view-midnight-colors '("#b2b2b2" . "#292b2e"))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(yas-global-mode t))
@@ -484,5 +390,5 @@ in that direction and display the target buffer in said window."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:family "JetBrains Mono" :foundry "outline" :slant normal :weight normal :height 98 :width normal)))))
 
