@@ -1,13 +1,16 @@
-(require 'package)
-(setq package-enable-at-startup nil)
+;; (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
 
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 
 (load-theme 'wombat)
+
+
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
+
 
 (defun transparency (opacity)
   "Set the window transparency
@@ -67,19 +70,6 @@ T: 0-100"
 			   ))
 
 
-;; (require 'web-mode)
-;; (add-to-list 'auto-mode-alist '("\\.[tj]sx?\\'" . web-mode))
-
-
-;; (require 'eglot)
-;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
-;; (add-to-list 'eglot-server-programs '(python-mode . ("pyls")))
-
-;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "/home/Jon/build2/bin/clangd")) 
-;; (add-hook 'c-mode-hook 'eglot-ensure)
-;; (add-hook 'c++-mode-hook 'eglot-ensure)
-;; (add-hook 'python-mode-hook 'eglot-ensure)
-
 (add-hook 'prog-mode-hook 'linum-mode)
 
 ;; linum fix
@@ -87,68 +77,89 @@ T: 0-100"
   '(set-face-attribute 'linum nil :height 100))
 
 
-
-(require 'company)
-(global-set-key (kbd "M-/") #'company-complete)
-(global-set-key (kbd "C-<return>") #'company-complete)
+(use-package company
+  :bind
+  (("M-/" . 'company-complete)
+   ("C-<return>" . 'company-complete))
+  :config
+  (global-company-mode)
 ;; (setq company-idle-delay 0)
-;; (setq company-minimum-prefix-length 2)
-(add-hook 'after-init-hook 'global-company-mode)
-;; Fuzzy company
-;; (global-company-fuzzy-mode 1)
+  )
 
-
-(advice-add 'eglot-eldoc-function :around
+(use-package eglot
+  :after (company)
+  :bind
+  (("C-c a" . 'eglot-code-actions)
+   ("C-c ;" . 'eglot-rename)
+   ("C-c d" . 'xref-find-definitions)
+   ("C-c i" . 'eglot-find-implementation)
+   ("C-c r" . 'xref-find-references)
+   ("C-c l" . 'eglot-format))
+  :config
+  (advice-add 'eglot-eldoc-function :around
             (lambda (oldfun)
               (let ((help (help-at-pt-kbd-string)))
-                (if help (message "%s" help) (funcall oldfun)))))
+                (if help (message "%s" help) (funcall oldfun))))))
 
+(use-package telephone-line
+  :defer t
+  :config
+  (telephone-line-mode 1))
 
-;; Telephone line (powerline)
-(require 'telephone-line)
-(telephone-line-mode 1)
-;; Forge (magit addon)
-(with-eval-after-load 'magit
-  (require 'forge))
+(use-package drag-stuff
+  :defer t
+  :config
+  (drag-stuff-global-mode 1)
+  (drag-stuff-define-keys))
 
+(use-package fix-word
+  :defer t
+  :bind
+  (("M-u" . 'fix-word-upcase)
+   ("M-l" . 'fix-word-downcase)
+   ("M-c" . 'fix-word-capitalize)))
 
-;; Move-stuff
-(drag-stuff-global-mode 1)
-(drag-stuff-define-keys)
+(use-package ranger
+  :defer t
+  :init
+  (setq ranger-preview-file t)
+  (setq ranger-dont-show-binary t)
+  (setq ranger-max-preview-size 10)
+  (setq ranger-width-preview 0.40)
+  :config
+  (ranger-override-dired-mode nil))
 
-;; Fix word
-(global-set-key (kbd "M-u") #'fix-word-upcase)
-(global-set-key (kbd "M-l") #'fix-word-downcase)
-(global-set-key (kbd "M-c") #'fix-word-capitalize)
-
-;; Ranger
-(ranger-override-dired-mode nil)
-(setq ranger-preview-file t)
-(setq ranger-dont-show-binary t)
-(setq ranger-max-preview-size 10)
-(setq ranger-width-preview 0.40)
-
-
-;; Helm
-(setq helm-display-function 'helm-display-buffer-in-own-frame
+(use-package helm
+  :defer t
+  :init
+  (setq helm-display-function 'helm-display-buffer-in-own-frame
         helm-display-buffer-reuse-frame t
         helm-use-undecorated-frame-option t)
+  :bind
+  (("M-y" . 'helm-show-kill-ring)
+   ("M-x" . 'helm-M-x)
+   ("<menu>" . 'helm-M-x)
+   ("<apps>" . 'helm-M-x)))
 
-;; Ivy
-(setq ivy-re-builders-alist
-      '((t . ivy--regex-plus)))
+(use-package ivy
+  :defer t
+  :init
+  (setq ivy-re-builders-alist
+	'((t . ivy--regex-plus)))
+  :bind
+  (("C-s" . 'swiper)
+   ("C-x b" . 'ivy-switch-buffer)
+   ("C-b" . 'ivy-switch-buffer)))
 
-
-;; Rainbow delimiters
-;; (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
-
-
-;; Projectile
-;;(setq projectile-completion-system 'ivy)
-;;(define-key projectile-mode-map (kbd "M-p") 'projectile-command-map)
-
-;; Mic-paren
-(paren-activate)     ; activating
+(use-package counsel
+  :after (ivy)
+  :bind
+  ("C-x C-f" . 'counsel-find-file))
+  
+(use-package mic-paren
+  :defer t
+  :config
+  (paren-activate))
 
 ;; Autosave (#)
 ;; (add-hook 'focus-out-hook 'save-buffer)
@@ -157,18 +168,24 @@ T: 0-100"
 ;; automatically save buffers associated with files on buffer switch
 ;; and on windows switch
 ;; https://batsov.com/articles/2012/03/08/emacs-tip-number-5-save-buffers-automatically-on-buffer-or-window-switch/
-(defadvice switch-to-buffer (before save-buffer-now activate)
-  (when buffer-file-name (save-buffer)))
-(defadvice other-window (before other-window-now activate)
-  (when buffer-file-name (save-buffer)))
-(defadvice windmove-up (before other-window-now activate)
-  (when buffer-file-name (save-buffer)))
-(defadvice windmove-down (before other-window-now activate)
-  (when buffer-file-name (save-buffer)))
-(defadvice windmove-left (before other-window-now activate)
-  (when buffer-file-name (save-buffer)))
-(defadvice windmove-right (before other-window-now activate)
-  (when buffer-file-name (save-buffer)))
+
+(use-package windswap
+  :defer t
+  :config
+  (windmove-default-keybindings 'control 'shift)
+  (windswap-default-keybindings 'control 'shift 'alt)  
+  (defadvice switch-to-buffer (before save-buffer-now activate)
+    (when buffer-file-name (save-buffer)))
+  (defadvice other-window (before other-window-now activate)
+    (when buffer-file-name (save-buffer)))
+  (defadvice windmove-up (before other-window-now activate)
+    (when buffer-file-name (save-buffer)))
+  (defadvice windmove-down (before other-window-now activate)
+    (when buffer-file-name (save-buffer)))
+  (defadvice windmove-left (before other-window-now activate)
+    (when buffer-file-name (save-buffer)))
+  (defadvice windmove-right (before other-window-now activate)
+    (when buffer-file-name (save-buffer))))
 
 
 ;; Backups (~)
@@ -180,30 +197,7 @@ T: 0-100"
      kept-old-versions 2
      version-contol :true)
 
-;; Key Bindings
 
-
-;; Corral
-(global-set-key (kbd "M-9") 'corral-parentheses-backward)
-(global-set-key (kbd "M-0") 'corral-parentheses-forward)
-(global-set-key (kbd "M-[") 'corral-brackets-backward)
-(global-set-key (kbd "M-]") 'corral-brackets-forward)
-(global-set-key (kbd "M-{") 'corral-braces-backward)
-(global-set-key (kbd "M-}") 'corral-braces-forward)
-(global-set-key (kbd "M-\"") 'corral-double-quotes-backward)
-
-;; Helm
-(global-set-key (kbd "M-y") #'helm-show-kill-ring)
-(global-set-key (kbd "M-x") #'helm-M-x)
-(global-set-key (kbd "<menu>") #'helm-M-x)
-(global-set-key (kbd "<apps>") #'helm-M-x)
-
-;; Ivy
-(global-set-key (kbd "C-x B") #'ivy-push-view)
-(global-set-key (kbd "C-s") #'swiper)
-(global-set-key (kbd "C-x b") #'ivy-switch-buffer)
-(global-set-key (kbd "C-b") #'ivy-switch-buffer) ; overwrite
-(global-set-key (kbd "C-x C-f") #'counsel-find-file)
 
 ;; window management
 ;; (global-set-key (kbd "C-o") #'(lambda () (interactive) (other-window 1)))
@@ -219,17 +213,13 @@ T: 0-100"
 
 (define-key key-translation-map (kbd "<escape>") (kbd "C-g"))
 
-;; transpose lines
-(global-set-key (kbd "<M-up>") #'move-line-up)
-(global-set-key (kbd "<M-down>") #'move-line-down)
-;; treemacs
-(global-set-key (kbd "C-x d") #'treemacs)
-;; multiple cursors
-(global-set-key (kbd "C-c C-e") #'mc/edit-lines)
-(global-set-key (kbd "C->") #'mc/mark-next-like-this)
-(global-set-key (kbd "C-c M->") #'mc/mark-skip-next-like-this)
-(global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-a") #'mc/mark-all-like-this)
+(use-package multiple-cursors
+  :bind
+  (("C->" . 'mc/mark-next-like-this)
+   ("C-<" . 'mc/mark-previous-like-this)
+   ("C-c C-a" . 'mc/mark-all-like-this)
+   ("C-c C-e" . 'mc/edit-lines)))
+
 ;; quick compile
 (global-set-key (kbd "C-c b") #'compile)
 (global-set-key (kbd "C-c B") #'recompile)
@@ -238,42 +228,15 @@ T: 0-100"
 (global-set-key (kbd "M-=") (lambda (arg) (interactive "p") (er/expand-region (- arg))))
 
 
-(global-set-key (kbd "C-x w") #'windresize)
+(use-package windresize
+  :bind
+  (("C-x w" . 'windresize)))
+
 (global-set-key (kbd "C-;") #'comment-line)
 
-(global-set-key (kbd "C-x g") #'magit-status)
-
-(global-set-key (kbd "C-S-<left>") #'windmove-left)
-(global-set-key (kbd "C-S-<right>") #'windmove-right)
-(global-set-key (kbd "C-S-<up>") #'windmove-up)
-(global-set-key (kbd "C-S-<down>") #'windmove-down)
-
-
-;; Eglot bindings
-(global-set-key (kbd "C-c a") #'eglot-code-actions)
-(global-set-key (kbd "C-c ;") #'eglot-rename)
-(global-set-key (kbd "C-c d") #'xref-find-definitions)
-(global-set-key (kbd "C-c i") #'eglot-find-implementation)
-(global-set-key (kbd "C-c r") #'xref-find-references)
-(global-set-key (kbd "C-c l") #'eglot-format)
-
-
-
-;; Semantic refactor bindings
-;; (require 'srefactor)
-;; (require 'srefactor-lisp)
-
-;; OPTIONAL: ADD IT ONLY IF YOU USE C/C++. 
-;; (semantic-mode 1) ;; -> this is optional for Lisp
-
-;; (define-key c-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
-;; (define-key c++-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
-;; (global-set-key (kbd "M-RET o") 'srefactor-lisp-one-line)
-;; (global-set-key (kbd "M-RET m") 'srefactor-lisp-format-sexp)
-;; (global-set-key (kbd "M-RET d") 'srefactor-lisp-format-defun)
-;; (global-set-key (kbd "M-RET b") 'srefactor-lisp-format-buffer)
-
-
+(use-package magit
+  :bind
+  (("C-x g" . 'magit-status)))
 
 
 ;; Shell fix to allow for clearing with C-l
@@ -283,10 +246,12 @@ T: 0-100"
                          'comint-postoutput-scroll-to-bottom)))
 
 ;; Shell fix to use bash aliases
-(setq shell-file-name "bash")
-(setq shell-command-switch "-ic")
+;; (setq shell-file-name "bash")
+;; (setq shell-command-switch "-ic")
+
 
 ;; Terminal fixes
+;; TODO: Helm yank ring integration
 (add-hook 'term-mode-hook
    (lambda ()
      ;; C-x is the prefix command, rather than C-c
@@ -294,15 +259,16 @@ T: 0-100"
      (define-key term-raw-map "\M-y" 'yank-pop)
      (define-key term-raw-map "\M-w" 'kill-ring-save)))
 
-;; Linux only -- dirtrack mode
-(require 'dirtrack) ;change the method used to determine the current directory in a shell
-(add-hook 'shell-mode-hook
-          (lambda ()
-            (shell-dirtrack-mode 0) ;stop the usual shell-dirtrack mode
-            (setq dirtrack-list '("^[^:]+:\\([^\\$#]+\\)[\\$#]" 1)) 
-            ;(dirtrack-debug-mode) ;this shows any change in directory that dirtrack mode sees
-            (dirtrack-mode))) ;enable the more powerful dirtrack mode
-
+;; (use-package dirtrack
+  ;; :if (eq system-type 'gnu/linux)
+  ;; :defer t
+  ;; :config
+  ;; (add-hook 'shell-mode-hook
+            ;; (lambda ()
+              ;; (shell-dirtrack-mode 0) ;stop the usual shell-dirtrack mode
+              ;; (setq dirtrack-list '("^[^:]+:\\([^\\$#]+\\)[\\$#]" 1)) 
+					;; (dirtrack-debug-mode) ;this shows any change in directory that dirtrack mode sees
+              ;; (dirtrack-mode)))) ;enable the more powerful dirtrack mode
 
 
 ;; Charles's custom functions
@@ -315,30 +281,8 @@ T: 0-100"
       (message "Saved")
              (message "(No changes need to be saved)")))
 
-(defun move-line-up ()
-       "Swap the line at point with the previous line."
-       (interactive)
-       (beginning-of-line)
-       (unless (bobp)
-         (next-line)
-         (transpose-lines -1)
-         (previous-line))
-       (end-of-line nil))
-     (defun move-line-down ()
-       "Swap the line at point with the next line."
-       (interactive)
-       (next-line)
-       (transpose-lines 1)
-       (previous-line)
-       (end-of-line nil))
 
 
-
-;; (load "shell-custom.el")
-;; (global-set-key (kbd "C-c <left>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'left)))
-;; (global-set-key (kbd "C-c <right>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'right)))
-;; (global-set-key (kbd "C-c <up>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'above)))
-;; (global-set-key (kbd "C-c <down>") #'(lambda () (interactive) (my-display-buffer (shell-get-buffer-create) nil 'below)))
 (global-set-key
  (kbd "C-c c")
  (lambda ()
@@ -346,6 +290,9 @@ T: 0-100"
    (let ((current-prefix-arg '(4)))
      (call-interactively #'shell))))
 
+
+;; Make gc pauses faster by decreasing the threshold.
+(setq gc-cons-threshold (* 2 1000 1000))
 
 
 (custom-set-variables
@@ -380,7 +327,7 @@ T: 0-100"
      ("\\?\\?\\?+" . "#dc752f")))
  '(inhibit-startup-screen t)
  '(package-selected-packages
-   '(visual-regexp fix-word aggressive-indent drag-stuff yafolding corral ranger org-bullets list-packages-ext web-mode solarized-theme mic-paren company-fuzzy flx counsel ivy helm realgud forge diff-hl git-gutter telephone-line ## yasnippet undo-tree rainbow-delimiters magit windresize treemacs multiple-cursors expand-region eglot company))
+   '(use-package visual-regexp fix-word aggressive-indent drag-stuff yafolding ranger org-bullets list-packages-ext web-mode solarized-theme mic-paren company-fuzzy counsel ivy helm realgud diff-hl git-gutter telephone-line ## yasnippet undo-tree rainbow-delimiters magit windresize treemacs multiple-cursors expand-region eglot company))
  '(pdf-view-midnight-colors '("#b2b2b2" . "#292b2e"))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
